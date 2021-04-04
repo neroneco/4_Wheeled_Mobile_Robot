@@ -9,9 +9,11 @@ OBJ = obj
 all: $(BIN)
 
 $(BIN): obj/main.o obj/opticSensor.o
+	mkdir bin
 	$(CC) $(CFLAGS) $^ -o $@
 
 obj/main.o: src/main.c
+	mkdir obj
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 obj/%.o: src/%.c
