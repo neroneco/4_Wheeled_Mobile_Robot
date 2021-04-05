@@ -19,14 +19,8 @@ int main(int argc, char **argv){
 
 	struct optic_sens_table sensor_table = {0, 0x48, "/dev/i2c-0"};
 
-/*
-	sensor_table->addr = 0x48;
-	strcpy(sensor_table->filename, "/dev/i2c-0");
-*/
-
-
 	buffer = 0b00100001; 					  // control byte: single-ended output on chanel AIN1
-	
+
 	optic_sens_init( &sensor_table);
 	optic_sens_write(&sensor_table, &buffer); // not sure if this is needed TODO: check if it is
 

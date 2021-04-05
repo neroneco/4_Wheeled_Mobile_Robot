@@ -1,6 +1,6 @@
 /*
 Simple prototype function to communicate with
-NanoHat motor module (PCA9685 chip, precisely)
+ADC (PCF8591 chip)
 
 In this function read, wirte functions are
 used. Alternative version might be done with
@@ -45,7 +45,7 @@ int optic_sens_write(struct optic_sens_table* table, uint8_t* buf){
 		fprintf(stderr,"ERROR: in write: %s\n",strerror(errno));
 		exit(1);
 	}
-	
+
 	return 0;
 }
 
