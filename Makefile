@@ -9,19 +9,16 @@ OBJ = obj
 all: $(BIN)
 
 $(BIN): obj/main.o obj/opticSensor.o
-	mkdir bin
+	mkdir -p bin
 	$(CC) $(CFLAGS) $^ -o $@
 
 obj/main.o: src/main.c
-	mkdir obj
+	mkdir -p obj
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 clear:
-ifeq ($(OS),Windows_NT) 
-	del /Q bin\* obj\*
-else
-	rm -r bin/* obj/*
-endif
+	$(RM) -r bin obj
+
