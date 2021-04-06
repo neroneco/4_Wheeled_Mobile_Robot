@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <linux/i2c-dev.h>
 
+#include "i2c_com.h"
 #include "opticSensor.h"
 
 #define V_REF 	   3.3
@@ -17,12 +18,12 @@ int main(int argc, char **argv){
 
 	uint8_t buffer; // initializing buffer for communication
 
-	struct optic_sens_table sensor_table = {0, 0x48, "/dev/i2c-0"};
+	struct i2c_table sensor_table = {0, 0x48, "/dev/i2c-0"};
 
 	buffer = 0b00100001; 					  // control byte: single-ended output on chanel AIN1
 
-	optic_sens_init( &sensor_table);
-	optic_sens_write(&sensor_table, &buffer); // not sure if this is needed TODO: check if it is
+	i2c_init( &sensor_table);
+	i2c_write(&sensor_table, &buffer); // not sure if this is needed TODO: check if it is
 
 	printf("Reading from the ADC:\n");
 	printf("---------------------\n");
@@ -31,14 +32,14 @@ int main(int argc, char **argv){
 	float distance;
 
 	while(1){
-		optic_sens_read(&sensor_table, &buffer);
+		i2c_read(&sensor_table, &buffer);
 		real_voltage_value = (V_REF/RESOLUTION)*buffer;
 		distance = voltage_to_distance(real_voltage_value);
 		printf("| %5.2f |\n",distance);
 		sleep(1);
 	}
 
-	optic_sens_close(&sensor_table);
+	i2c_close(&sensor_table);
 
 	return 0;
 }
