@@ -23,7 +23,7 @@ int main(int argc, char **argv){
 	buffer = 0b00100001; 					  // control byte: single-ended output on chanel AIN1
 
 	i2c_init( &sensor_table);
-	i2c_write(&sensor_table, &buffer); // not sure if this is needed TODO: check if it is
+	i2c_write(&sensor_table, &buffer,1); // not sure if this is needed TODO: check if it is
 
 	printf("Reading from the ADC:\n");
 	printf("---------------------\n");
@@ -32,7 +32,7 @@ int main(int argc, char **argv){
 	float distance;
 
 	while(1){
-		i2c_read(&sensor_table, &buffer);
+		i2c_read(&sensor_table, &buffer,1);
 		real_voltage_value = (V_REF/RESOLUTION)*buffer;
 		distance = voltage_to_distance(real_voltage_value);
 		printf("| %5.2f |\n",distance);

@@ -29,7 +29,7 @@ distanceMeasure: $(OBJ)/distanceMeasure.o $(OBJ)/opticSensor.o $(OBJ)/i2c_com.o
 	mkdir -p bin
 	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
 
-gyroscope: $(OBJ)/gyroscope.o $(OBJ)/i2c_com.o
+barometer: $(OBJ)/barometer.o $(OBJ)/i2c_com.o
 	mkdir -p bin
 	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
 

@@ -38,9 +38,9 @@ int i2c_init(struct i2c_table* table){
 }
 
 // writing to device
-int i2c_write(struct i2c_table* table, uint8_t* buf){
+int i2c_write(struct i2c_table* table, uint8_t* buf, uint8_t num){
 
-	if(write(table->file, buf, 1) != 1){
+	if(write(table->file, buf, num) != num){
         // error handling
 		fprintf(stderr,"ERROR:(dev addr: %d) in write: %s\n",table->addr,strerror(errno));
 		exit(1);
@@ -50,9 +50,9 @@ int i2c_write(struct i2c_table* table, uint8_t* buf){
 }
 
 // reading from device
-int i2c_read(struct i2c_table* table, uint8_t* buf){
+int i2c_read(struct i2c_table* table, uint8_t* buf, uint8_t num){
 
-	if(read(table->file, buf, 1) != 1){
+	if(read(table->file, buf, num) != num){
         // error handling
 		fprintf(stderr,"ERROR:(dev addr: %d) in read: %s\n",table->addr,strerror(errno));
 		exit(1);
