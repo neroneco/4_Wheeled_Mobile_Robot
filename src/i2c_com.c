@@ -1,11 +1,11 @@
 /*
-Simple prototype functions to communicate with
-devices via i2c protocol
-
-In this function read, wirte functions are
-used. Alternative version might be done with
-i2c_smbus_read_byte_data, i2c_smbus_write_byte_data
-*/
+ * Simple prototype functions to communicate with
+ * devices via i2c protocol
+ * 
+ * In this function read, wirte functions are
+ * used. Alternative version might be done with
+ * i2c_smbus_read_byte_data, i2c_smbus_write_byte_data
+ */
 
 #pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
 

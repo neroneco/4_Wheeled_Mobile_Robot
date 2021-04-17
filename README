@@ -1,0 +1,59 @@
+PROJECT TITLE:
+ "4-wheeled mobile robot"
+
+DESCRIPTION:
+  The goal of the project is to develop simple mobile robot
+ which is capable of reciving, sending and processing data from
+ various sensors and devices.
+  The main part of the robot is NanoPi SBC (Single Board Computer),
+ which runs Armbian OS.
+
+  _________________________________________
+ | LIST OF DEVICES: |     APPLICATION:     |
+ |------------------|----------------------|
+ | NanoPi NEO PLUS2 |   SBC (Armbian OS)   |
+ | PCF8591 chip     |         ADC          |
+ | SHARP GP2D12     | analog optic sensorc |
+ | Altimu-10-v5     |        (...)         |
+ | NanoHat-Motor    |  DC motor controller |
+ |__________________|______________________|
+
+FUNCTIONALITY:
+ User should be able to:
+  - connect to SBC via Ethernet or Wi-Fi
+  - recieve processed data from SBC
+  - control movement of the platform
+
+FUNCTIONAL DIAGRAM:
+                      __________________
+                     |  User computer   |
+                     |__________________|
+                              ^
+                              |
+                              | TCP/IP
+                              |
+                              |
+                      ________v_________
+                     | NanoPi NEO PLUS2 |
+                     |__________________|
+                              ^
+                              |
+                              | I2C     _________                           __________________
+                              |        | PCF8591 |        analog siganl    |      GP2D12      |
+                              +------->|  (ADC)  |<------------------------|  (optic sensor)  |
+                              |        |_________|                         |__________________|
+                              |
+                              |         _________________  
+                              |        |  Altimu-10-v5   | 
+                              +------->|  (gyroscope     |
+                              |        |   magnetometer  |
+                              |        |   accelerometer |
+                              |        |   barometer     |
+                              |        |   thermometer)  | 
+                              |        |_____[DOING]_____| 
+                              |
+                              |         _______________________               ______________
+                              |        |    NanoHat-Motor      |    PWM      |              |
+                              +------->| (DC motor controller) |------------>|  4 DC motors |
+                                       |________[TODO]_________|             |____[TODO]____|
+                              

@@ -25,8 +25,8 @@ int main(int argc, char **argv){
 	i2c_init( &sensor_table);
 	i2c_write(&sensor_table, &buffer,1); // not sure if this is needed TODO: check if it is
 
-	printf("Reading from the ADC:\n");
-	printf("---------------------\n");
+	printf("\n Reading from the ADC:\n"
+	       " ______ \n");
 
 	float real_voltage_value;
 	float distance;
