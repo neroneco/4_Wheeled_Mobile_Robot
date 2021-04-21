@@ -19,9 +19,9 @@ int main(int argc, char **argv){
 
     /*
      * Devives addresses:
-     *  LIS3MDL  : addres = 0x1e  (magnetic sensor         )
-     *  LPS25H   : addres = 0x5d  (barometer, thermometer  )
-     *  LSM6DS33 : addres = 0x6b  (accelerometer, gyroscope)
+     *  LIS3MDL  : address = 0x1e  (magnetic sensor         )
+     *  LPS25H   : address = 0x5d  (barometer, thermometer  )
+     *  LSM6DS33 : address = 0x6b  (accelerometer, gyroscope)
      */
     uint8_t address = 0x5d;
 

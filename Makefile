@@ -33,6 +33,10 @@ barometer: $(OBJ)/barometer.o $(OBJ)/altimu-10-v5.o $(OBJ)/i2c_com.o
 	mkdir -p bin
 	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
 
+gyroscope: $(OBJ)/gyroscope.o $(OBJ)/altimu-10-v5.o $(OBJ)/i2c_com.o
+	mkdir -p bin
+	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
+
 clear:
 	$(RM) -r $(BIN) $(OBJ)
 
