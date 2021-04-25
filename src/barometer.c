@@ -33,8 +33,8 @@ int main(int argc, char **argv){
                              .tv_nsec=500000000
                             };
 
-    struct pressure     press_data;
-    struct temperature  tempe_data;
+    struct data_24_bit press_data;
+    struct data_16_bit tempe_data;
     float  press;
     float  tempe;
 
