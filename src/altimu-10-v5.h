@@ -18,10 +18,16 @@
 #define LSM6DS33_ADDRESS 0x6b
 
 // LSM6DS33 chip:
+#define CTRL3_C 0x12
+#define OUT_G_A 0x22
+
+//   >gyroscope:
 #define CTRL2_G 0x11
 #define CTRL7_G 0x16
-#define CTRL3_C 0x12
-#define OUT_G   0x22
+
+//   >accelerometer:  
+#define CTRL1_XL 0x10
+
 
 #define ODR_HZ  20 // Output Data Rating (in Hz)
 
@@ -48,6 +54,7 @@ void get_data_LSM6DS33(struct i2c_table tab, uint8_t* buf);
 float pressure_convert(    struct data_24_bit press );
 float temperature_convert( struct data_16_bit tempe );
 float dps_convert(         struct data_16_bit dps   );
+float acce_convert(        struct data_16_bit accel );
 float dps_to_degree(       float dps, int odr_hz    );
-float acceleration_convert(struct data_16_bit accel );
+float acce_to_degree(float degree_1, float degree_2, float degree_3);
 
