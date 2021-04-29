@@ -42,6 +42,18 @@ struct data_16_bit{
     uint8_t MSB; 
 };
 
+enum coor{
+    X,
+    Y,
+    Z,
+};
+
+struct object{
+    float values[3];
+    float degrees[3];
+    struct data_16_bit raw[3];
+};
+
 
 void set_up_LIS3MDL( struct i2c_table tab, uint8_t* buf);
 void set_up_LPS25H(  struct i2c_table tab, uint8_t* buf);
