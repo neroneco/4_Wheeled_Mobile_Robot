@@ -87,23 +87,22 @@ float acce_convert(struct data_16_bit accel){
     return (float)((((int8_t)accel.MSB)<<8)+(uint8_t)accel.LSB)*0.488;
 }
 
-float acce_to_degree(float degree_1, float degree_2, float degree_3){
+float acce_to_degree(float acce_1, float acce_2, float acce_3){
     float degree;
+    float rad = atan2f(acce_2,(sqrtf((acce_1*acce_1)+(acce_3*acce_3))));
 
-    if      (degree_1 > 0 && degree_2 > 0 && degree_3 > 0){
-
+    if      (acce_2 <= 0 && acce_3 <= 0){
+        degree = (rad/M_PI)*180;
     }
-    else if (degree_1 > 0 && degree_2 > 0 && degree_3 > 0){
-
+    else if (acce_2 < 0  && acce_3 >= 0){
+        degree = -180 - (rad/M_PI)*180;
     }
-    else if (degree_1 < 0 && degree_2 > 0 && degree_3 > 0){
-
+    else if (acce_2 >= 0 && acce_3  < 0){
+        degree = (rad/M_PI)*180;
     }
-    else if (degree_1 < 0 && degree_2 > 0 && degree_3 > 0){
-
+    else if (acce_2 > 0  && acce_3 >= 0){
+        degree = 180 - (rad/M_PI)*180;
     }
 
-
-    //return atan2f(degree_2,(sqrtf((degree_1*degree_1)+(degree_3*degree_3))));
     return degree;
 }
