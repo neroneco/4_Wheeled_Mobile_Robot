@@ -28,6 +28,17 @@
 //   >accelerometer:  
 #define CTRL1_XL 0x10
 
+// LIS3MDL chip:
+#define OUT_M 0x28
+
+//   >magnetometer:
+#define CTRL_REG1_M 0x20
+#define CTRL_REG2_M 0x21
+#define CTRL_REG3_M 0x22
+#define CTRL_REG4_M 0x23
+#define CTRL_REG5_M 0x24
+
+
 
 #define ODR_HZ  20 // Output Data Rating (in Hz)
 
@@ -67,6 +78,9 @@ float pressure_convert(    struct data_24_bit press );
 float temperature_convert( struct data_16_bit tempe );
 float dps_convert(         struct data_16_bit dps   );
 float acce_convert(        struct data_16_bit accel );
-float dps_to_degree(       float dps, int odr_hz    );
-float acce_to_degree(float degree_1, float degree_2, float degree_3);
+float magn_convert(        struct data_16_bit magne );
 
+float dps_to_degree( float dps, int odr_hz);
+float acce_to_degree(float vect_1, float vect_2, float vect_3);
+
+float* cross_product(float* vector_1, float* vector_2,float* results);

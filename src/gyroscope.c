@@ -3,17 +3,22 @@
 #include <stdint.h>
 #include <signal.h>
 #include <time.h>
+#include <math.h>
 
 #include "i2c_com.h"
 #include "altimu-10-v5.h"
 
-#define ERR_X  2
-#define ERR_Y -4.90
-#define ERR_Z -3.3
+#define ERR_X_G  2
+#define ERR_Y_G -4.90
+#define ERR_Z_G -3.3
+
+#define ERR_X_M -0.0199
+#define ERR_Y_M  0.3072
+#define ERR_Z_M -1.3839
 
  volatile static int run = 1;
  
- static void SIGINT_handler(int sig_num){
+ static void SIGINT_handler(volatile int sig_num){
      run = 0;
  }
 
@@ -72,7 +77,7 @@ int main(int argc, char **argv){
 
         /* RECEIVING DATA: */
         get_data_LSM6DS33(gyro_acce_table,buffer);
-        get_data_LIS3MDL( magn_table,     buffer);
+        get_data_LIS3MDL( magn_table, (buffer+12));
 
         /*printf("|%5d|%5d|%5d|%5d|%5d|%5d|\n",
                 buffer[0],
@@ -98,13 +103,24 @@ int main(int argc, char **argv){
         acce->raw[Z].LSB = buffer[10];
         acce->raw[Z].MSB = buffer[11];
 
-        gyro->values[X] = dps_convert(gyro->raw[X])-ERR_X;
-        gyro->values[Y] = dps_convert(gyro->raw[Y])-ERR_Y;
-        gyro->values[Z] = dps_convert(gyro->raw[Z])-ERR_Z;
+        magn->raw[X].LSB = buffer[12];
+        magn->raw[X].MSB = buffer[13];
+        magn->raw[Y].LSB = buffer[14];
+        magn->raw[Y].MSB = buffer[15];
+        magn->raw[Z].LSB = buffer[16];
+        magn->raw[Z].MSB = buffer[17];
+
+        gyro->values[X] = dps_convert(gyro->raw[X])-ERR_X_G;
+        gyro->values[Y] = dps_convert(gyro->raw[Y])-ERR_Y_G;
+        gyro->values[Z] = dps_convert(gyro->raw[Z])-ERR_Z_G;
 
         acce->values[X] = acce_convert(acce->raw[X]);
         acce->values[Y] = acce_convert(acce->raw[Y]);
         acce->values[Z] = acce_convert(acce->raw[Z]);
+
+        magn->values[X] = magn_convert(magn->raw[X])-ERR_X_M;
+        magn->values[Y] = magn_convert(magn->raw[Y])-ERR_Y_M;
+        magn->values[Z] = magn_convert(magn->raw[Z])-ERR_Z_M;
 
         gyro->degrees[X] += dps_to_degree(gyro->values[X],ODR_HZ);
         gyro->degrees[Y] += dps_to_degree(gyro->values[Y],ODR_HZ);
@@ -115,12 +131,20 @@ int main(int argc, char **argv){
         acce->degrees[X] = acce_to_degree(acce->values[X],acce->values[Y],acce->values[Z]);
         acce->degrees[Y] = acce_to_degree(acce->values[Y],acce->values[X],acce->values[Z]);
 
+        /* It is possible to measure only         */
+        /* Pitch and Yaw with the magnetometer:   */
+        //magn->degrees[Y] = magn_to_degree(magn->values[Y],magn->values[X],magn->values[Z]);
+        //magn->degrees[Z] = magn_to_degree(magn->values[Z],magn->values[X],magn->values[Y]);
+        magn->degrees[X] = (atan2f(magn->values[Z],magn->values[X])/M_PI)*180;
+        magn->degrees[Y] = (atan2f(magn->values[Z],magn->values[Y])/M_PI)*180;
+        magn->degrees[Z] = (atan2f(magn->values[Y],magn->values[X])/M_PI)*180; 
+        
         /* PRINTING DATA: */
         //printf("|%5.2f|%5.2f|%5.2f|\n",dps_X,dps_Y,dps_Z);
         printf("gyro:    |%5.2f|%5.2f|%5.2f|\n",gyro->degrees[X],gyro->degrees[Y],gyro->degrees[Z]);
         printf("acce:    |%5.2f|%5.2f|XXXXX|\n",acce->degrees[X],acce->degrees[Y]);
-        //printf("magneto: |XXXXX|%5.2f|%5.2f|\n",degree_X_acce,degree_Y_acce);
-
+        printf("magn:    |%5.2f|%5.2f|%5.2f|\n",magn->degrees[X],magn->degrees[Y],magn->degrees[Z]);
+        
         nanosleep(&delay,NULL);
     }
 

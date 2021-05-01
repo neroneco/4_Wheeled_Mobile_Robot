@@ -6,10 +6,29 @@
 
 
 void set_up_LIS3MDL( struct i2c_table tab, uint8_t* buf){
+    buf[0] = CTRL_REG1_M;
+    buf[1] = 0b01000010; // set 300 Hz (high performance mode on X,Y axis)
+    i2c_write(&tab, buf, 2);
 
+    buf[0] = CTRL_REG2_M;
+    buf[1] = 0b01100000; // full scale selection +-16 gauss
+    i2c_write(&tab, buf, 2);
+
+    buf[0] = CTRL_REG3_M;
+    buf[1] = 0b00000000; // continuouss mode selection
+    i2c_write(&tab, buf, 2);
+
+    buf[0] = CTRL_REG4_M;
+    buf[1] = 0b00001000; // Z-axis high performance mode
+    i2c_write(&tab, buf, 2);
+
+    buf[0] = CTRL_REG5_M;
+    buf[1] = 0b01000000; // set BDU bit (Block Data Update)
+    i2c_write(&tab, buf, 2);
 }
-void set_up_LPS25H(  struct i2c_table tab, uint8_t* buf){
 
+void set_up_LPS25H(  struct i2c_table tab, uint8_t* buf){
+    // TODO: 
 }
 
 static void set_up_LSM6DS33_gyro(struct i2c_table tab, uint8_t* buf){
@@ -29,7 +48,6 @@ static void set_up_LSM6DS33_acce(struct i2c_table tab, uint8_t* buf){
 
 }
 
-
 void set_up_LSM6DS33(struct i2c_table tab, uint8_t* buf){
     buf[0] = CTRL3_C;
     buf[1] = 0b01000100; // set BDU(Block Data Update) bit and IF_INC(auto increment address) bit
@@ -39,9 +57,14 @@ void set_up_LSM6DS33(struct i2c_table tab, uint8_t* buf){
     set_up_LSM6DS33_acce(tab,buf);
 }
 
-void get_data_LIS3MDL( struct i2c_table tab, uint8_t* buf){
 
+
+void get_data_LIS3MDL( struct i2c_table tab, uint8_t* buf){
+    buf[0] = OUT_M + (1<<7); // MSB=1 -> autoincrement
+    i2c_write(&tab,buf,1);
+    i2c_read( &tab,buf,6);
 }
+
 void get_data_LPS25H(  struct i2c_table tab, uint8_t* buf){
 
 }
@@ -87,22 +110,40 @@ float acce_convert(struct data_16_bit accel){
     return (float)((((int8_t)accel.MSB)<<8)+(uint8_t)accel.LSB)*0.488;
 }
 
-float acce_to_degree(float acce_1, float acce_2, float acce_3){
+float acce_to_degree(float vect_1, float vect_2, float vect_3){
     float degree;
-    float rad = atan2f(acce_2,(sqrtf((acce_1*acce_1)+(acce_3*acce_3))));
+    float rad = atan2f(vect_2,(sqrtf((vect_1*vect_1)+(vect_3*vect_3))));
 
-    if      (acce_2 <= 0 && acce_3 <= 0){
+    if      (vect_2 <= 0 && vect_3 <= 0){
         degree = (rad/M_PI)*180;
     }
-    else if (acce_2 < 0  && acce_3 >= 0){
+    else if (vect_2 < 0  && vect_3 >= 0){
         degree = -180 - (rad/M_PI)*180;
     }
-    else if (acce_2 >= 0 && acce_3  < 0){
+    else if (vect_2 >= 0 && vect_3  < 0){
         degree = (rad/M_PI)*180;
     }
-    else if (acce_2 > 0  && acce_3 >= 0){
+    else if (vect_2 > 0  && vect_3 >= 0){
         degree = 180 - (rad/M_PI)*180;
     }
 
     return degree;
+}
+
+float magn_convert(struct data_16_bit magne){
+    return ((float)((((int8_t)magne.MSB)<<8)+(uint8_t)magne.LSB))/1711;
+}
+
+// float magn_to_degree(float vect_1, float vect_2, float vect_3){
+//     float degree;
+//     float rad = atan2f();
+//     return degree;
+// }
+
+float* cross_product(float* vector_1,float* vector_2,float* result){
+    result[0] = vector_1[1]*vector_2[2] - vector_1[1]*vector_2[2];
+    result[1] = vector_1[2]*vector_2[0] - vector_1[0]*vector_2[2];
+    result[2] = vector_1[0]*vector_2[1] - vector_1[1]*vector_2[0];
+
+    return result;
 }
