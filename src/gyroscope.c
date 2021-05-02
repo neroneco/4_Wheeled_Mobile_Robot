@@ -42,6 +42,9 @@ int main(int argc, char **argv){
     acce = malloc(sizeof(struct object));
     magn = malloc(sizeof(struct object));
 
+    float  east_vector[3];
+    float north_vector[3];
+
     /* Setting up device tables: */
     struct i2c_table gyro_acce_table = {
                                   .file = 0,
@@ -78,16 +81,6 @@ int main(int argc, char **argv){
         /* RECEIVING DATA: */
         get_data_LSM6DS33(gyro_acce_table,buffer);
         get_data_LIS3MDL( magn_table, (buffer+12));
-
-        /*printf("|%5d|%5d|%5d|%5d|%5d|%5d|\n",
-                buffer[0],
-                buffer[1],
-                buffer[2],
-                buffer[3],
-                buffer[4],
-                buffer[5]
-              );
-        */
 
         gyro->raw[X].LSB = buffer[0];
         gyro->raw[X].MSB = buffer[1];
@@ -128,22 +121,19 @@ int main(int argc, char **argv){
 
         /* It is possible to measure only         */
         /* Roll and Pitch with the accelerometer: */
-        acce->degrees[X] = acce_to_degree(acce->values[X],acce->values[Y],acce->values[Z]);
-        acce->degrees[Y] = acce_to_degree(acce->values[Y],acce->values[X],acce->values[Z]);
+        acce->degrees[X] = vector_to_degree(acce->values[X],acce->values[Y],acce->values[Z]);
+        acce->degrees[Y] = vector_to_degree(acce->values[Y],acce->values[X],acce->values[Z]);
 
         /* It is possible to measure only         */
         /* Pitch and Yaw with the magnetometer:   */
-        //magn->degrees[Y] = magn_to_degree(magn->values[Y],magn->values[X],magn->values[Z]);
-        //magn->degrees[Z] = magn_to_degree(magn->values[Z],magn->values[X],magn->values[Y]);
-        magn->degrees[X] = (atan2f(magn->values[Z],magn->values[X])/M_PI)*180;
-        magn->degrees[Y] = (atan2f(magn->values[Z],magn->values[Y])/M_PI)*180;
-        magn->degrees[Z] = (atan2f(magn->values[Y],magn->values[X])/M_PI)*180; 
+        cross_product(magn->values,acce->values,east_vector);
+        cross_product(acce->values,east_vector,north_vector);
+        
+        magn->degrees[Z] = vector_to_degree(north_vector[Z],north_vector[X],north_vector[Y]);
         
         /* PRINTING DATA: */
-        //printf("|%5.2f|%5.2f|%5.2f|\n",dps_X,dps_Y,dps_Z);
-        printf("gyro:    |%5.2f|%5.2f|%5.2f|\n",gyro->degrees[X],gyro->degrees[Y],gyro->degrees[Z]);
-        printf("acce:    |%5.2f|%5.2f|XXXXX|\n",acce->degrees[X],acce->degrees[Y]);
-        printf("magn:    |%5.2f|%5.2f|%5.2f|\n",magn->degrees[X],magn->degrees[Y],magn->degrees[Z]);
+        printf("gyro:         |%5.2f|%5.2f|%5.2f|\n",gyro->degrees[X],gyro->degrees[Y],gyro->degrees[Z]);
+        printf("acce_magn:    |%5.2f|%5.2f|%5.2f|\n",acce->degrees[X],acce->degrees[Y],magn->degrees[Z]);
         
         nanosleep(&delay,NULL);
     }

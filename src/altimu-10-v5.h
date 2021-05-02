@@ -81,6 +81,6 @@ float acce_convert(        struct data_16_bit accel );
 float magn_convert(        struct data_16_bit magne );
 
 float dps_to_degree( float dps, int odr_hz);
-float acce_to_degree(float vect_1, float vect_2, float vect_3);
+float vector_to_degree(float vect_1, float vect_2, float vect_3);
 
-float* cross_product(float* vector_1, float* vector_2,float* results);
+void cross_product(float* vector_1, float* vector_2, float* result);

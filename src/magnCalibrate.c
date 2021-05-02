@@ -7,6 +7,9 @@
 #include "i2c_com.h"
 #include "altimu-10-v5.h"
 
+#define ERR_X_M -0.0199
+#define ERR_Y_M  0.3072
+#define ERR_Z_M -1.3839
 
 volatile static int run = 1;
 
@@ -75,9 +78,9 @@ int main(int argc, char **argv){
         magn->raw[Z].LSB = buffer[4];
         magn->raw[Z].MSB = buffer[5];
 
-        magn->values[X] = magn_convert(magn->raw[X]);
-        magn->values[Y] = magn_convert(magn->raw[Y]);
-        magn->values[Z] = magn_convert(magn->raw[Z]);
+        magn->values[X] = magn_convert(magn->raw[X]) - ERR_X_M;
+        magn->values[Y] = magn_convert(magn->raw[Y]) - ERR_Y_M;
+        magn->values[Z] = magn_convert(magn->raw[Z]) - ERR_Z_M;
     
         /* PRINTING DATA: */
         printf("%.4f %.4f %.4f \n",magn->values[X], magn->values[Y], magn->values[Z]);
@@ -85,7 +88,8 @@ int main(int argc, char **argv){
         nanosleep(&delay,NULL);
     }
 
-    //printf("\nExiting...\n");
+    printf("\nExiting...\n");
+
     i2c_close(&magn_table);
     free(buffer);
     free(magn);

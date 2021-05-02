@@ -110,7 +110,7 @@ float acce_convert(struct data_16_bit accel){
     return (float)((((int8_t)accel.MSB)<<8)+(uint8_t)accel.LSB)*0.488;
 }
 
-float acce_to_degree(float vect_1, float vect_2, float vect_3){
+float vector_to_degree(float vect_1, float vect_2, float vect_3){
     float degree;
     float rad = atan2f(vect_2,(sqrtf((vect_1*vect_1)+(vect_3*vect_3))));
 
@@ -140,10 +140,8 @@ float magn_convert(struct data_16_bit magne){
 //     return degree;
 // }
 
-float* cross_product(float* vector_1,float* vector_2,float* result){
-    result[0] = vector_1[1]*vector_2[2] - vector_1[1]*vector_2[2];
+void cross_product(float* vector_1,float* vector_2,float* result){
+    result[0] = vector_1[1]*vector_2[2] - vector_1[2]*vector_2[1];
     result[1] = vector_1[2]*vector_2[0] - vector_1[0]*vector_2[2];
     result[2] = vector_1[0]*vector_2[1] - vector_1[1]*vector_2[0];
-
-    return result;
 }
