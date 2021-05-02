@@ -14,9 +14,6 @@
 volatile static int run = 1;
 
 static void SIGINT_handler(volatile int sig_num){
-//    printf("\nOoops...:%d\n",sig_num);
-//    printf("\nOoops...:\n");
-
     run = 0;
 }
 
@@ -28,9 +25,9 @@ int main(int argc, char **argv){
     sa.sa_handler = SIGINT_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_RESTART;
-    if (sigaction(SIGINT, &sa, NULL) == -1){
-        printf("error");
-    }
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+        perror("sigaction");
+    
     uint8_t* buffer; 
     buffer = malloc(20);
 
@@ -61,15 +58,6 @@ int main(int argc, char **argv){
 
         /* RECEIVING DATA: */
         get_data_LIS3MDL(magn_table,buffer);
-
-        //printf("|%5d|%5d|%5d|%5d|%5d|%5d|\n",
-        //        buffer[0],
-        //        buffer[1],
-        //        buffer[2],
-        //        buffer[3],
-        //        buffer[4],
-        //        buffer[5]
-        //      );
 
         magn->raw[X].LSB = buffer[0];
         magn->raw[X].MSB = buffer[1];

@@ -26,8 +26,9 @@ static void SIGINT_handler(volatile int sig_num){
 int main(int argc, char **argv){
 
     struct sigaction sa;
-    sigemptyset(&sa.sa_mask);
     sa.sa_handler = SIGINT_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
     if (sigaction(SIGINT, &sa, NULL) == -1)
         perror("sigaction");
     
@@ -139,7 +140,7 @@ int main(int argc, char **argv){
     }
 
     printf("\nExiting...\n");
-    
+
     i2c_close(&gyro_acce_table);
     i2c_close(&magn_table);
     free(buffer);

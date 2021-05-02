@@ -38,6 +38,11 @@
 #define CTRL_REG4_M 0x23
 #define CTRL_REG5_M 0x24
 
+// LPS25H chip:
+#define CTRL_REG1_P 0x20
+//   >thermometer:
+#define PRESS_OUT   0x28
+
 
 
 #define ODR_HZ  20 // Output Data Rating (in Hz)

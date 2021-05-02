@@ -5,6 +5,7 @@
 #include "altimu-10-v5.h"
 
 
+/* SET UP */
 void set_up_LIS3MDL( struct i2c_table tab, uint8_t* buf){
     buf[0] = CTRL_REG1_M;
     buf[1] = 0b01000010; // set 300 Hz (high performance mode on X,Y axis)
@@ -27,8 +28,17 @@ void set_up_LIS3MDL( struct i2c_table tab, uint8_t* buf){
     i2c_write(&tab, buf, 2);
 }
 
-void set_up_LPS25H(  struct i2c_table tab, uint8_t* buf){
-    // TODO: 
+void set_up_LPS25H(  struct i2c_table tab, uint8_t* buf){ 
+    //  buffer[0]:
+    //  address of the devices register 
+    buf[0] = CTRL_REG1_P;
+    
+    //  buffer[1]:
+    //  7 -> bit turn on device
+    //  6,5,4-bits -> set output data rate (1Hz,7H,12.5Hz,25Hz)
+    //  3-bit -> BDU bit (prevents from reading LSB or MSB from different samples) 
+    buf[1] = 0b10100100;
+    i2c_write(&tab, buf, 2);
 }
 
 static void set_up_LSM6DS33_gyro(struct i2c_table tab, uint8_t* buf){
@@ -58,7 +68,7 @@ void set_up_LSM6DS33(struct i2c_table tab, uint8_t* buf){
 }
 
 
-
+/* GET DATA */
 void get_data_LIS3MDL( struct i2c_table tab, uint8_t* buf){
     buf[0] = OUT_M + (1<<7); // MSB=1 -> autoincrement
     i2c_write(&tab,buf,1);
@@ -66,7 +76,9 @@ void get_data_LIS3MDL( struct i2c_table tab, uint8_t* buf){
 }
 
 void get_data_LPS25H(  struct i2c_table tab, uint8_t* buf){
-
+    buf[0] = PRESS_OUT + (1<<7); // MSB=1 -> autoincrement register address
+    i2c_write(&tab, buf, 1);
+    i2c_read( &tab, buf, 5);
 }
 
 void get_data_LSM6DS33(struct i2c_table tab, uint8_t* buf){
@@ -81,21 +93,13 @@ void get_data_LSM6DS33(struct i2c_table tab, uint8_t* buf){
 }
 
 
-
+/* CONVERSION FUNCIONS */
 float pressure_convert(struct data_24_bit press){
-    float converted_value;
-    
-    converted_value = (float)((int32_t)((press.MSB<<16) + (int32_t)(press.LSB_H<<8) + (int32_t)press.LSB_L))/4096;
-    
-    return converted_value;
+    return ((float)((((int32_t)press.MSB)<<16) + (((int32_t)press.LSB_H)<<8) + (int32_t)press.LSB_L))/4096;
 }
 
 float temperature_convert(struct data_16_bit tempe){
-    float converted_value;
-
-    converted_value = 42.5 + (float)((int16_t)((tempe.MSB<<8) + tempe.LSB))/480;
-
-    return converted_value;
+    return 42.5 + (float)((int16_t)((tempe.MSB<<8) + tempe.LSB))/480;
 }
 
 float dps_convert(struct data_16_bit dps){
@@ -133,12 +137,6 @@ float vector_to_degree(float vect_1, float vect_2, float vect_3){
 float magn_convert(struct data_16_bit magne){
     return ((float)((((int8_t)magne.MSB)<<8)+(uint8_t)magne.LSB))/1711;
 }
-
-// float magn_to_degree(float vect_1, float vect_2, float vect_3){
-//     float degree;
-//     float rad = atan2f();
-//     return degree;
-// }
 
 void cross_product(float* vector_1,float* vector_2,float* result){
     result[0] = vector_1[1]*vector_2[2] - vector_1[2]*vector_2[1];
