@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdint.h>
+#include <signal.h>
 #include <time.h>
 #include <linux/i2c-dev.h>
 
@@ -12,8 +13,19 @@
 #include "altimu-10-v5.h"
 
 
+volatile static int run = 1;
+ 
+static void SIGINT_handler(volatile int sig_num){
+    run = 0;
+}
 
 int main(int argc, char **argv){
+
+    struct sigaction sa;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_handler = SIGINT_handler;
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+        perror("sigaction");
 
     uint8_t buffer[10];
 
@@ -23,9 +35,8 @@ int main(int argc, char **argv){
      *  LPS25H   : address = 0x5d  (barometer, thermometer  )
      *  LSM6DS33 : address = 0x6b  (accelerometer, gyroscope)
      */
-    uint8_t address = 0x5d;
 
-    struct i2c_table bar_table = {0,address,"/dev/i2c-0"};
+    struct i2c_table bar_table = {0,LPS25H_ADDRESS,"/dev/i2c-0"};
     
     /* Sets reading delay to 0.5 seconds: */
     struct timespec delay = {
@@ -50,7 +61,7 @@ int main(int argc, char **argv){
      * we have to send one byte which is address of register
      */
 
-    while(1){
+    while(run){
         /* 
          *  buffer[0]:
          *  address of the devices register 
@@ -70,8 +81,6 @@ int main(int argc, char **argv){
         i2c_write(&bar_table, buffer, 1);
         i2c_read( &bar_table, buffer, 5);
 
-        //printf("|%5d|%5d|%5d|%5d|%5d|\n",buffer[0],buffer[1],buffer[2],buffer[3],buffer[4]);
-
         press_data.LSB_L = buffer[0];
         press_data.LSB_H = buffer[1];
         press_data.MSB   = buffer[2];
@@ -86,6 +95,8 @@ int main(int argc, char **argv){
         
         nanosleep(&delay,NULL);
     }
+
+    printf("\nExiting...\n");
 
     i2c_close(&bar_table);
 

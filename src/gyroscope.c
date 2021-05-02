@@ -16,11 +16,11 @@
 #define ERR_Y_M  0.3072
 #define ERR_Z_M -1.3839
 
- volatile static int run = 1;
+volatile static int run = 1;
  
- static void SIGINT_handler(volatile int sig_num){
-     run = 0;
- }
+static void SIGINT_handler(volatile int sig_num){
+    run = 0;
+}
 
 
 int main(int argc, char **argv){
@@ -128,7 +128,7 @@ int main(int argc, char **argv){
         /* Pitch and Yaw with the magnetometer:   */
         cross_product(magn->values,acce->values,east_vector);
         cross_product(acce->values,east_vector,north_vector);
-        
+
         magn->degrees[Z] = vector_to_degree(north_vector[Z],north_vector[X],north_vector[Y]);
         
         /* PRINTING DATA: */
@@ -139,6 +139,7 @@ int main(int argc, char **argv){
     }
 
     printf("\nExiting...\n");
+    
     i2c_close(&gyro_acce_table);
     i2c_close(&magn_table);
     free(buffer);
