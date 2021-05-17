@@ -129,13 +129,16 @@ int main(int argc, char **argv){
         /* Pitch and Yaw with the magnetometer:   */
         cross_product(magn->values,acce->values,east_vector);
         cross_product(acce->values,east_vector,north_vector);
-
         magn->degrees[Z] = vector_to_degree(north_vector[Z],north_vector[X],north_vector[Y]);
+        //magn->degrees[Z] = (atan2f(magn->values[Z],(sqrtf((magn->values[Y]*magn->values[Y])+(magn->values[X]*magn->values[X]))))/M_PI)*180;
         
         /* PRINTING DATA: */
         printf("gyro:         |%5.2f|%5.2f|%5.2f|\n",gyro->degrees[X],gyro->degrees[Y],gyro->degrees[Z]);
         printf("acce_magn:    |%5.2f|%5.2f|%5.2f|\n",acce->degrees[X],acce->degrees[Y],magn->degrees[Z]);
-        
+
+        //printf("gyro:         |XXXXX|XXXXX|XXXXX|\n");//,gyro->degrees[X],gyro->degrees[Y],gyro->degrees[Z]);
+        //printf("acce_magn:    |%5.2f|%5.2f|%5.2f|\n",magn->values[X],magn->values[Y],magn->values[Z]);
+
         nanosleep(&delay,NULL);
     }
 

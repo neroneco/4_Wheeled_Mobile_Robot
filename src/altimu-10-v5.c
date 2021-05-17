@@ -143,3 +143,4 @@ void cross_product(float* vector_1,float* vector_2,float* result){
     result[1] = vector_1[2]*vector_2[0] - vector_1[0]*vector_2[2];
     result[2] = vector_1[0]*vector_2[1] - vector_1[1]*vector_2[0];
 }
+

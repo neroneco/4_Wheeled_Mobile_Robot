@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdint.h>
+#include <time.h>
 #include <linux/i2c-dev.h>
 
 #include "i2c_com.h"
@@ -19,6 +20,11 @@ int main(int argc, char **argv){
 	uint8_t buffer; // initializing buffer for communication
 
 	struct i2c_table sensor_table = {0, 0x48, "/dev/i2c-0"};
+
+    struct timespec delay = {                   
+                         .tv_sec  = 0,
+                         .tv_nsec = 50000000
+                        };
 
 	buffer = 0b00100001; 					  // control byte: single-ended output on chanel AIN1
 
@@ -36,7 +42,7 @@ int main(int argc, char **argv){
 		real_voltage_value = (V_REF/RESOLUTION)*buffer;
 		distance = voltage_to_distance(real_voltage_value);
 		printf("| %5.2f |\n",distance);
-		sleep(1);
+		nanosleep(&delay,NULL);
 	}
 
 	i2c_close(&sensor_table);
