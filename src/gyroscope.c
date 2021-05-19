@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <time.h>
 #include <math.h>
+#include <ncurses.h>
 
 #include "i2c_com.h"
 #include "altimu-10-v5.h"
@@ -24,6 +25,9 @@ static void SIGINT_handler(volatile int sig_num){
 
 
 int main(int argc, char **argv){
+
+    initscr();
+    curs_set(0);
 
     struct sigaction sa;
     sa.sa_handler = SIGINT_handler;
@@ -72,10 +76,10 @@ int main(int argc, char **argv){
     set_up_LSM6DS33(gyro_acce_table,buffer);
     set_up_LIS3MDL( magn_table,     buffer);
 
-    printf("\n  Reading from LSM6DS33 chip:    \n"
-           " ________________________________  \n"
-           "| Pitch(x): | Roll(y): | Yaw(z): | \n"
-           "|___________|__________|_________| \n");
+    printw("\n                                 Reading from LSM6DS33 chip:    \n"
+           "                                ________________________________  \n"
+           "                               | Pitch(x): | Roll(y): | Yaw(z): | \n"
+           "                               |___________|__________|_________| \n");
 
     while(run){
 
@@ -133,16 +137,30 @@ int main(int argc, char **argv){
         //magn->degrees[Z] = (atan2f(magn->values[Z],(sqrtf((magn->values[Y]*magn->values[Y])+(magn->values[X]*magn->values[X]))))/M_PI)*180;
         
         /* PRINTING DATA: */
-        printf("gyro:         |%5.2f|%5.2f|%5.2f|\n",gyro->degrees[X],gyro->degrees[Y],gyro->degrees[Z]);
-        printf("acce_magn:    |%5.2f|%5.2f|%5.2f|\n",acce->degrees[X],acce->degrees[Y],magn->degrees[Z]);
-
+        //mvprintw("gyro:         |%5.2f|%5.2f|%5.2f|\n",gyro->degrees[X],gyro->degrees[Y],gyro->degrees[Z]);
+        //mvprintw(5,1,"acce_magn:   |   %1.2f   |   %5.2f  |   %5.2f |\n",acce->degrees[X],acce->degrees[Y],magn->degrees[Z]);
+        // gyroscope
+        mvprintw(5,1,"gyroscope:                    |           |          |         |\n");
+        mvprintw(6,1,"                              |___________|__________|_________|\n");
+        mvprintw(5,34,"%1.2f",gyro->degrees[X]);
+        mvprintw(5,46,"%1.2f",gyro->degrees[Y]);
+        mvprintw(5,56,"%1.2f",gyro->degrees[Z]);
+        // accelerometer, magnetometer:
+        mvprintw(7,1,"accelerometer/magnetormetr:   |           |          |         |\n");
+        mvprintw(8,1,"                              |___________|__________|_________|\n");
+        mvprintw(7,34,"%1.2f",acce->degrees[X]);
+        mvprintw(7,46,"%1.2f",acce->degrees[Y]);
+        mvprintw(7,56,"%1.2f",magn->degrees[Z]);
+        move(9,0);
+        curs_set(0);
+        refresh();
         //printf("gyro:         |XXXXX|XXXXX|XXXXX|\n");//,gyro->degrees[X],gyro->degrees[Y],gyro->degrees[Z]);
         //printf("acce_magn:    |%5.2f|%5.2f|%5.2f|\n",magn->values[X],magn->values[Y],magn->values[Z]);
 
         nanosleep(&delay,NULL);
     }
 
-    printf("\nExiting...\n");
+
 
     i2c_close(&gyro_acce_table);
     i2c_close(&magn_table);
@@ -150,6 +168,10 @@ int main(int argc, char **argv){
     free(magn);
     free(acce);
     free(gyro);
+
+    endwin();
+
+    printf("\nExited successfully\n");
 
     return 0;
 }

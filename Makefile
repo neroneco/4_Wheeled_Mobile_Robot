@@ -1,7 +1,7 @@
 # -*- Makefile -*-
 
 CC := aarch64-none-linux-gnu-gcc
-CFLAGS := -g -Wall -lm
+CFLAGS := -g -Wall -lm -lncurses
 
 SRC := src
 BIN := bin
