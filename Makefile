@@ -41,6 +41,10 @@ magnCalibrate: $(OBJ)/magnCalibrate.o $(OBJ)/altimu-10-v5.o $(OBJ)/i2c_com.o
 	mkdir -p bin
 	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
 
+wheels_control: $(OBJ)/wheels_control.o $(OBJ)/nanohat_motor.o $(OBJ)/i2c_com.o
+	mkdir -p bin
+	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
+
 clear:
 	$(RM) -r $(BIN) $(OBJ)
 
