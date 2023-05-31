@@ -45,25 +45,25 @@ Control system for mobile robot project written for my bachelor thesis.
 ## Files
 
 * SBC board:
-    * src/server.c  -> TCP server
-    * src/sensors.c -> data acquisition
-    * src/wheels_control.c -> DC motor control
-    * src/i2c_com.c -> I2C communication
-    * src/altimu-10-v5.c -> AltIMU-10-v5 memory defines
-    * src/nanohat_motor.c -> NanoHat-Motor memory defines
+    * `src/server.c`  -> TCP server
+    * `src/sensors.c` -> data acquisition
+    * `src/wheels_control.c` -> DC motor control
+    * `src/i2c_com.c` -> I2C communication
+    * `src/altimu-10`-v5.c -> AltIMU-10-v5 memory defines
+    * `src/nanohat_motor.c` -> NanoHat-Motor memory defines
 
 * Computer PC (with Linux OS):
-    * src/client.c  -> TCP client
-    * src/controller.c -> Xbox 360 controller interface
+    * `src/client.c`  -> TCP client
+    * `src/controller.c` -> Xbox 360 controller interface
 
 * Other:
-    * connect.sh -> bash script to connect to SBC
-    * send.sh -> bash script to send program file to SBC
+    * `connect.sh` -> bash script to connect to SBC
+    * `send.sh` -> bash script to send program file to SBC
 
 ---
 
 ## Tools used
-* gcc for ARM/x86_64 processors
+* `gcc` for ARM/x86_64 processors
 
 ---
 
