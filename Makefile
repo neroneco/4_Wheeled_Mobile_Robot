@@ -1,46 +1,67 @@
 # -*- Makefile -*-
 
-CC := aarch64-none-linux-gnu-gcc
-CFLAGS := -g -Wall -lm
+CC_ARM := aarch64-none-linux-gnu-gcc
+CC_x86_64 := gcc
+CFLAGS := -g -Wall
 
 SRC := src
-BIN := bin
-OBJ := obj
+BIN_ARM := bin_arm
+OBJ_ARM := obj_arm
+BIN_x86_64 := bin_x86_64
+OBJ_x86_64 := obj_x86_64
 
 SOURCES := $(wildcard src/*.c)
 OBJECTS := $(patsubst src/%.c,obj/%.o,$(SOURCES))
 
 
-all: $(BIN)/main
+all: client controller server sensors wheels_control
 
-$(OBJ):
-	mkdir -p obj
+$(OBJ_ARM):
+	mkdir -p $(OBJ_ARM)
 
-$(BIN):
-	mkdir -p bin
+$(BIN_ARM):
+	mkdir -p $(BIN_ARM)
 
-$(BIN)/main: $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@
+$(OBJ_x86_64):
+	mkdir -p $(OBJ_x86_64)
 
-obj/%.o: $(OBJ) $(SRC)/%.c
-	$(CC) $(CFLAGS) -c $(SRC)/$*.c -o $@
+$(BIN_x86_64):
+	mkdir -p $(BIN_x86_64)
 
-distanceMeasure: $(OBJ)/distanceMeasure.o $(OBJ)/opticSensor.o $(OBJ)/i2c_com.o
-	mkdir -p bin
-	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
+$(OBJ_ARM)/%.o: $(OBJ_ARM) $(SRC)/%.c
+	$(CC_ARM) $(CFLAGS) -c $(SRC)/$*.c -o $@
 
-barometer: $(OBJ)/barometer.o $(OBJ)/altimu-10-v5.o $(OBJ)/i2c_com.o
-	mkdir -p bin
-	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
+%: $(OBJ_ARM)/%.o
+	mkdir -p $(BIN_ARM)
+	$(CC_ARM) $(CFLAGS) $^ -o $(BIN_ARM)/$@
 
-gyroscope: $(OBJ)/gyroscope.o $(OBJ)/altimu-10-v5.o $(OBJ)/i2c_com.o
-	mkdir -p bin
-	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
+$(OBJ_x86_64)/%.o: $(OBJ_x86_64) $(SRC)/%.c
+	$(CC_x86_64) $(CFLAGS) -c $(SRC)/$*.c -o $@
 
-magnCalibrate: $(OBJ)/magnCalibrate.o $(OBJ)/altimu-10-v5.o $(OBJ)/i2c_com.o
-	mkdir -p bin
-	$(CC) $(CFLAGS) $^ -o $(BIN)/$@
+%: $(OBJ_x86_64)/%.o
+	mkdir -p $(BIN_x86_64)
+	$(CC_x86_64) $(CFLAGS) $^ -o $(BIN_x86_64)/$@
 
-clear:
-	$(RM) -r $(BIN) $(OBJ)
+client: $(OBJ_x86_64)/altimu-10-v5.o $(OBJ_x86_64)/i2c_com.o $(OBJ_x86_64)/client.o
+	mkdir -p $(BIN_x86_64)
+	$(CC_x86_64) $(CFLAGS) $^ -o $(BIN_x86_64)/$@ -lm
+
+controller: $(OBJ_x86_64)/controller.o
+	mkdir -p $(BIN_x86_64)
+	$(CC_x86_64) $(CFLAGS) -pthread $^ -o $(BIN_x86_64)/$@
+
+server: $(OBJ_ARM)/server.o
+	mkdir -p $(BIN_ARM)
+	$(CC_ARM) $(CFLAGS) $^ -o $(BIN_ARM)/$@
+
+sensors: $(OBJ_ARM)/sensors.o $(OBJ_ARM)/altimu-10-v5.o $(OBJ_ARM)/i2c_com.o
+	mkdir -p $(BIN_ARM)
+	$(CC_ARM) $(CFLAGS) $^ -o $(BIN_ARM)/$@ -lm
+
+wheels_control: $(OBJ_ARM)/wheels_control.o $(OBJ_ARM)/nanohat_motor.o $(OBJ_ARM)/i2c_com.o
+	mkdir -p $(BIN_ARM)
+	$(CC_ARM) $(CFLAGS) $^ -o $(BIN_ARM)/$@
+
+clean:
+	$(RM) -r $(BIN_ARM) $(OBJ_ARM) $(BIN_x86_64) $(OBJ_x86_64)
 

@@ -88,10 +88,18 @@
 // Control registers:
 #define MODE1       0x00   
 #define MODE2       0x01
-#define PRE_SCALE   0xfe
+#define PRE_SCALE   0xfe // default 200 Hz
+
+// Pulse Width Modulation:
+#define MAX_PULSE_WIDTH   4095
+#define ON  1
+#define OFF 0
+
+// Device address:
+#define PCA9685_ADDRESS 0x70
 
 // Functions to communicate with nanohat motor:
-void set_up_PCA9685(   struct i2c_table tab, uint8_t* buf);
-void get_data_PCA9685( struct i2c_table tab, uint8_t* buf);
-void send_data_PCA9685(struct i2c_table tab, uint8_t* buf);
-void set_PWM_PCA9685(  struct i2c_table tab, uint8_t led_register, int freq);
+void set_up_PCA9685(struct i2c_table tab, uint8_t* buf);
+void set_PWM_PCA9685(struct i2c_table tab, uint8_t* buf, uint8_t led_register, uint16_t pulse_width);
+void set_LED_ON_OFF_PCA9685(struct i2c_table tab, uint8_t* buf, uint8_t led_register, int state);
+void get_data_PCA9685(struct i2c_table tab, uint8_t* buf, uint8_t reg);

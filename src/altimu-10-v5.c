@@ -92,6 +92,16 @@ void get_data_LSM6DS33(struct i2c_table tab, uint8_t* buf){
         i2c_read( &tab,buf,12);
 }
 
+void get_data_accelerometer(struct i2c_table tab, uint8_t* buf){
+        buf[0] = OUT_A;
+        i2c_write(&tab,buf,1);
+
+        /* reading 6 bytes of data corresponding to Pitch Roll Yaw values
+         * from accelerometer
+         * (3 pairs of {MSB,LSB} )
+         */
+        i2c_read( &tab,buf,6);
+}
 
 /* CONVERSION FUNCIONS */
 float pressure_convert(struct data_24_bit press){
